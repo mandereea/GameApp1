@@ -101,7 +101,7 @@ button {
 }
 
 .inputError {
-    border:1px solid red ;
+    border:2px solid red ;
 }
 .errorMsg {
     margin-left: 10px;
