@@ -23,9 +23,9 @@ function createDomGameObject(object){
     //1 DELETE
     document.getElementById(`${object._id}`).addEventListener('click', function(event){
         //event.preventDefault();
-        console.log('delete button found');
+        //console.log('delete button found');
         createDeleteRequest(event.target.getAttribute("id"), function(apiR){
-            console.log("raspunsul Api pt delete", apiR);
+            //console.log("raspunsul Api pt delete", apiR);
             deleteElementFromDom(event.target.parentElement);
         });
     });
@@ -41,12 +41,12 @@ function createDomGameObject(object){
         document.getElementById(`1${object._id}`).addEventListener('click', function(event){
             
             event.preventDefault();
-            console.log('gasit buton update din form, victory!', `1${object._id}`);
+            //console.log('gasit buton update din form, victory!', `1${object._id}`);
 
             const jocUpdated = updateGame(object);
 
             createUpdateRequest(event.target.getAttribute("id"), jocUpdated, function(apiResponse) {
-                console.log("raspunsul api pe PUT", apiResponse);
+                //console.log("raspunsul api pe PUT", apiResponse);
                 //inlocuiesc jocul cu versiunea updated
                 gameDiv.innerHTML = createDomGameObject(apiResponse);
                 //sterg editForm
