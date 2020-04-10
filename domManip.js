@@ -32,7 +32,7 @@ function createDomGameObject(object){
 
     //2 EDIT
     document.getElementById(`0${object._id}`).addEventListener('click', function(event){
-        event.preventDefault();
+        //event.preventDefault();
         const updateForm = document.createElement('div');
         updateForm.innerHTML += createEditForm(object);
         gameDiv.appendChild(updateForm);
@@ -52,7 +52,8 @@ function createDomGameObject(object){
                 //sterg editForm
                 deleteElementFromDom(event.target.parentElement);
 
-
+                //****AICI***** */
+                location.reload();
             });
         });
     })
