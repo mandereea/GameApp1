@@ -1,0 +1,111 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing: border-box;
+    font-family: Helvetica, Arial, sans-serif;
+}
+body {
+    width:90%;
+    margin: 0 auto;
+    margin-top: 2em;
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.creationForm {
+    flex-basis:40%;
+    height: 41em;
+    border-radius: 13px;
+    background-color: #006699;
+    display:flex;
+    flex-direction: column;
+    padding: 2em;
+}
+.element-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 1em 0;
+}
+.element-wrapper>label {
+    flex-basis: 25%;
+    color: white;
+    font-size: 1.3em;
+    
+}
+.element-wrapper>input,
+.element-wrapper>textarea,
+.element-wrapper>select {
+    flex-basis: 70%;
+    padding: 0.5em 0 0.5em 1em;
+    border: none;
+    border-radius: 9px;
+}
+
+.container {
+    flex-basis:55%;
+}
+.updateForm {
+    margin-top:1em;
+    border-radius: 13px;
+    background-color: #006699;
+    display:flex;
+    flex-direction: column;
+    padding: 2em;
+}
+.buttons-wrapper {
+    align-self: flex-end;
+}
+img {
+    width: 90px;
+    float:left;
+    margin:10px;
+}
+h1 {
+    color: #006699;
+    font-size: 1.3em;
+    margin-top: 20px;
+    margin-bottom:10px;
+}
+
+button {
+    margin-top:1em;
+    padding: 1em;
+    border:none;
+    border-radius: 9px;
+    font-size: 1.1em;
+    font-weight: bold;
+    color: white;
+    letter-spacing:0.04em;
+}
+.submit-btn {
+    background-color: #ace600;
+    color: #006699;
+    align-self: flex-end;
+}
+.deleteBtn{
+    background-color:#ff471a;
+    margin-right: 1em;
+}
+.editBtn {
+    background-color: #006699;
+}
+.cancel-btn{
+    color: black;
+}
+.update-btn {
+    background-color:#ace600 ;
+    color: #006699;
+    margin-left: 1em;
+}
+
+.inputError {
+    border:2px solid red ;
+}
+.errorMsg {
+    margin-left: 10px;
+    color:red;
+    display:block;
+    font-size: 14px;
+}
