@@ -39,7 +39,8 @@ function createDomGameObject(object){
         const updateForm = document.createElement('div');
         updateForm.innerHTML += createEditForm(object);
         gameDiv.appendChild(updateForm);
-
+        updateForm.parentElement.classList.add('to-update');
+        
         //3 UPDATE in updateForm
         document.getElementById(`1${object._id}`).addEventListener('click', async function(event){
             
@@ -47,17 +48,17 @@ function createDomGameObject(object){
             //console.log('gasit buton update din form, victory!', `1${object._id}`);
 
             const jocUpdated = updateGame(object);
-            const jocUpdatedJson = await createUpdateRequest(event.target.getAttribute("id"), jocUpdated);
-            
-                //console.log("raspunsul api pe PUT", apiResponse);
-                //inlocuiesc jocul cu versiunea updated
-                gameDiv.innerHTML = createDomGameObject(jocUpdatedJson);
-                //sterg editForm
-                deleteElementFromDom(event.target.parentElement);
+            const apiResponse = await createUpdateRequest(event.target.getAttribute("id"), jocUpdated);
 
-                //****AICI***** */
-                location.reload();
+                document.querySelector('.to-update').innerHTML =  
+                `<h1>${apiResponse.title}</h1>
+                <img src="${apiResponse.imageUrl}"
+                <p>${apiResponse.description}</p>
+                <button class="deleteBtn" id="${apiResponse._id}">Delete Game</button>
+                <button class = "editBtn" id="0${apiResponse._id}" >Edit Game</button>`;
+
             
+                document.querySelector('.to-update').classList.remove('to-update');
         });
     })
 

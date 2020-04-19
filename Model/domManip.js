@@ -34,8 +34,14 @@ function createDomGameObject(object){
     document.getElementById(`0${object._id}`).addEventListener('click', function(event){
         //event.preventDefault();
         const updateForm = document.createElement('div');
-        updateForm.innerHTML += createEditForm(object);
+        updateForm.innerHTML = createEditForm(object);
+        
         gameDiv.appendChild(updateForm);
+        //console.log(updateForm.parentElement)
+
+        //found a way to select this specific gameDiv upon which the Edit-ing happens
+        updateForm.parentElement.classList.add('to-update');
+        //console.log(document.querySelector('.to-update'))
 
         //3 UPDATE in updateForm
         document.getElementById(`1${object._id}`).addEventListener('click', function(event){
@@ -46,14 +52,20 @@ function createDomGameObject(object){
             const jocUpdated = updateGame(object);
 
             createUpdateRequest(event.target.getAttribute("id"), jocUpdated, function(apiResponse) {
-                //console.log("raspunsul api pe PUT", apiResponse);
-                //inlocuiesc jocul cu versiunea updated
-                gameDiv.innerHTML = createDomGameObject(apiResponse);
-                //sterg editForm
-                deleteElementFromDom(event.target.parentElement);
-
-                //****AICI***** */
-                location.reload();
+                
+                //i renounce using creatingDomGameObject :), and I render directly the selected gameDiv's content
+                //based on the apiResponse
+                //with 
+                
+                document.querySelector('.to-update').innerHTML =  
+                                    `<h1>${apiResponse.title}</h1>
+                                    <img src="${apiResponse.imageUrl}"
+                                    <p>${apiResponse.description}</p>
+                                    <button class="deleteBtn" id="${apiResponse._id}">Delete Game</button>
+                                    <button class = "editBtn" id="0${apiResponse._id}" >Edit Game</button>`;
+                
+                // removing the (selecting) class, in order to have it only on one game at a time
+                document.querySelector('.to-update').classList.remove('to-update');
             });
         });
     })

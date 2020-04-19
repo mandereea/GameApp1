@@ -36,6 +36,7 @@ function createDomGameObject(object){
         const updateForm = document.createElement('div');
         updateForm.innerHTML += createEditForm(object);
         gameDiv.appendChild(updateForm);
+        gameDiv.classList.add('to-update');
 
         //3 UPDATE in updateForm
         document.getElementById(`1${object._id}`).addEventListener('click', function(event){
@@ -46,14 +47,16 @@ function createDomGameObject(object){
             const jocUpdated = updateGame(object);
 
             createUpdateRequest(event.target.getAttribute("id"), jocUpdated).then (function(apiResponse) {
-                //console.log("raspunsul api pe PUT", apiResponse);
-                //inlocuiesc jocul cu versiunea updated
-                gameDiv.innerHTML = createDomGameObject(apiResponse);
-                //sterg editForm
-                deleteElementFromDom(event.target.parentElement);
+                
+                document.querySelector('.to-update').innerHTML =  
+                `<h1>${apiResponse.title}</h1>
+                <img src="${apiResponse.imageUrl}"
+                <p>${apiResponse.description}</p>
+                <button class="deleteBtn" id="${apiResponse._id}">Delete Game</button>
+                <button class = "editBtn" id="0${apiResponse._id}" >Edit Game</button>`;
 
-                //****AICI***** */
-                location.reload();
+            
+                document.querySelector('.to-update').classList.remove('to-update');
             });
         });
     })
