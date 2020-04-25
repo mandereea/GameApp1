@@ -1,4 +1,4 @@
-let gamesUrl = "https://games-world.herokuapp.com";
+const gamesUrl = "https://games-app-siit.herokuapp.com";
 
 async function getGamesList(){
     const response = await fetch(gamesUrl+"/games");
@@ -6,13 +6,13 @@ async function getGamesList(){
     return arrayGames;
 }
 
-async function createGameRequest(jocNou) {
+async function createGameRequest(newGame) {
     const gameResponse = await fetch(gamesUrl + "/games", {
         method: "POST",
         headers: {
             "Content-type":"application/x-www-form-urlencoded"
         },
-        body: jocNou
+        body: newGame
     });
     const newGameJson = gameResponse.json();
 
@@ -20,33 +20,23 @@ async function createGameRequest(jocNou) {
 }
 
 //pentru a cere sa stergem un joc
-async function createDeleteRequest(IdJocDeSters) {
-    const deleteResponse = await fetch(gamesUrl + "/games/" + IdJocDeSters, {
+async function createDeleteRequest(idGameToDelete) {
+    const deleteResponse = await fetch(gamesUrl + "/games/" + idGameToDelete, {
         method:"DELETE"
     })
-    console.log(deleteResponse);
-    console.log(deleteResponse.text());
-    
+    //console.log(deleteResponse);
+    //console.log(deleteResponse.text());
 }    
 
 //pentru a cere sa modificam un joc
-async function createUpdateRequest(IdJocDeEditat, jocDeEditat) {
-    const updateResponse = await fetch(gamesUrl + "/games/" + IdJocDeEditat.substr(1), {
+async function createUpdateRequest(idGameToEdit, gameToEdit) {
+    const updateResponse = await fetch(gamesUrl + "/games/" + idGameToEdit.substr(6), {
         method:"PUT",
         headers:{
             "Content-type":"application/x-www-form-urlencoded"
         },
-        body: jocDeEditat
+        body: gameToEdit
     })
-
     return updateResponse.json();
 }
     
-    
-    
-//     .then(function(raspuns){
-//         return raspuns.json();
-//     }).then(function(raspunsJson){
-//         editeazaJocul(raspunsJson);
-//     });
-// }

@@ -1,14 +1,14 @@
-let gamesUrl = "https://games-world.herokuapp.com";
+const gamesUrl = "https://games-app-siit.herokuapp.com";
 
 
-// pentru a cere lista de jocuri
+// requesting games list
 function getGamesList(){
     return fetch(gamesUrl + "/games", {
         method:"GET"
-    }).then(raspuns => raspuns.json());
+    }).then(response => response.json());
 }
 
-//pentru a cere sa facem un nou joc nou
+//requesting to create and post new game
 function createGameRequest(newGame) {
     return fetch(gamesUrl + "/games", {
             method: "POST",
@@ -20,21 +20,21 @@ function createGameRequest(newGame) {
 }    
     
 
-//pentru a cere sa stergem un joc
-function createDeleteRequest(IdJocDeSters) {
-    return fetch(gamesUrl + "/games/" + IdJocDeSters, {
+//requesting game delete
+function createDeleteRequest(idGameToDelete) {
+    return fetch(gamesUrl + "/games/" + idGameToDelete, {
             method:"DELETE"
-    }).then(raspuns => raspuns.text());
+    }).then(response => response.text());
 }
 
-//pentru a cere sa modificam un joc
-function createUpdateRequest(IdJocDeEditat, jocDeEditat) {
-    return fetch(gamesUrl + "/games/" + IdJocDeEditat.substr(1), {
+//requesting game update
+function createUpdateRequest(idGameToEdit, gameToEdit) {
+    return fetch(gamesUrl + "/games/" + idGameToEdit.substr(6), {
                 method:"PUT",
                 headers:{
                     "Content-type":"application/x-www-form-urlencoded"
                 },
-                body: jocDeEditat
-    }).then(raspuns => raspuns.json());
+                body: gameToEdit
+    }).then(response => response.json());
 }    
     

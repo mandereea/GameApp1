@@ -14,73 +14,72 @@ function createDomGameObject(object){
     let gameDiv = document.createElement('div');
 
     gameDiv.innerHTML += `<h1>${object.title}</h1>
-                        <img src="${object.imageUrl}"
+                        <img src="${object.imageUrl}"/>
                         <p>${object.description}</p>
-                        <button class="deleteBtn" id="${object._id}">Delete Game</button>
-                        <button class = "editBtn" id="0${object._id}" >Edit Game</button>`;
-    
+                        <button class="deleteBtn" id="delete${object._id}">Delete Game</button>
+                        <button class = "editBtn" id="edit${object._id}" >Edit Game</button>`;
+    gameDiv.setAttribute("id", object._id);
     container.appendChild(gameDiv);
 
     //pentru a adauga functionalitate pe butonul de:
     //1 DELETE
-    document.getElementById(`${object._id}`).addEventListener('click', async function(event){
-        //event.preventDefault();
-        //console.log('delete button found');
-         createDeleteRequest(event.target.getAttribute("id"));
-        
-            //console.log("raspunsul Api pt delete", apiR);
-            deleteElementFromDom(event.target.parentElement);
-    
+    document.getElementById(`delete${object._id}`).addEventListener('click', async function(eventClickDelete){
+        //requesting to delete from server 
+        await createDeleteRequest(eventClickDelete.target.parentElement.getAttribute("id"));
+        //deleting from DOM
+        deleteElementFromDom(eventClickDelete.target.parentElement);
     });
-
+    
     //2 EDIT
-    document.getElementById(`0${object._id}`).addEventListener('click', function(event){
-        //event.preventDefault();
-        const updateForm = document.createElement('div');
-        updateForm.innerHTML += createEditForm(object);
-        gameDiv.appendChild(updateForm);
-        updateForm.parentElement.classList.add('to-update');
-        
+    document.getElementById(`edit${object._id}`).addEventListener('click', function(eventClickEdit){
+            
+        const gameToEdit = eventClickEdit.target.parentElement;
+        //console.log(gameToEdit);
+        const updateForm = document.createElement('form');
+        updateForm.innerHTML = createEditForm(gameToEdit);
+        updateForm.classList.add('updateForm');
+            
+        eventClickEdit.target.parentElement.appendChild(updateForm);
+            
+            
         //3 UPDATE in updateForm
-        document.getElementById(`1${object._id}`).addEventListener('click', async function(event){
-            
-            event.preventDefault();
-            //console.log('gasit buton update din form, victory!', `1${object._id}`);
-
-            const jocUpdated = updateGame(object);
-            const apiResponse = await createUpdateRequest(event.target.getAttribute("id"), jocUpdated);
-
-                document.querySelector('.to-update').innerHTML =  
-                `<h1>${apiResponse.title}</h1>
-                <img src="${apiResponse.imageUrl}"
-                <p>${apiResponse.description}</p>
-                <button class="deleteBtn" id="${apiResponse._id}">Delete Game</button>
-                <button class = "editBtn" id="0${apiResponse._id}" >Edit Game</button>`;
-
-            
-                document.querySelector('.to-update').classList.remove('to-update');
-        });
-    })
+        document.getElementById(`update${gameToEdit.id}`).addEventListener('click', async function(eventClickSaveChanges){
+                
+            eventClickSaveChanges.preventDefault();
+               
+            const updatedGame = encodeUpdateFormInput();
+            const apiResponse = await createUpdateRequest(eventClickSaveChanges.target.getAttribute("id"), updatedGame);
+    
+            const gameDivContainer = eventClickSaveChanges.target.parentElement.parentElement.parentElement;
+                    
+            gameDivContainer.querySelector('h1').innerHTML = apiResponse.title;
+            gameDivContainer.querySelector('img').setAttribute("src", apiResponse.imageUrl);
+            gameDivContainer.querySelector("p").innerHTML = apiResponse.description;
+    
+            const formElement = eventClickSaveChanges.target.parentElement.parentElement;
+                
+            formElement.remove();
+            });
+        })
 
 }
 
 //functia ce-mi da jocUpdated de trimis la API
-function updateGame(obj){
-    
-    //1 colectez noile date din editForm in obj
-    obj.title = document.getElementById('updateTitle');
-    obj.description = document.getElementById('updateDescription');
-    obj.imageUrl = document.getElementById('updateImageUrl');
+function encodeUpdateFormInput(){
+    //1. colectez datele din updateForm
+    const title = document.getElementById('updateTitle');
+    const description = document.getElementById('updateDescription');
+    const imageUrl = document.getElementById('updateImageUrl');
 
     //2 le encodez in ordine pentru API request
     const urlencoded = new URLSearchParams();
     
-    urlencoded.append("title", obj.title.value);
-    urlencoded.append("description", obj.description.value);
-    urlencoded.append("imageUrl", obj.imageUrl.value);
+    urlencoded.append("title", title.value);
+    urlencoded.append("description", description.value);
+    urlencoded.append("imageUrl", imageUrl.value);
     
     return urlencoded;
- }
+}
 
 
 //functia pt validare input text
@@ -152,17 +151,15 @@ document.querySelector('.submit-btn').addEventListener('click', function(event) 
         urlencoded.append("description", gDescription.value);
         
         //b fac requestul si folosesc raspunsul sa creez/afisez jocul in Dom 
-        async function afiseazaJocNou() {
+        async function displayNewGame() {
             const newGameJson = await createGameRequest(urlencoded) 
             createDomGameObject(newGameJson);
         }
-        afiseazaJocNou();
+        displayNewGame();
         //c fac reset la form, dupa success submit
         document.querySelector('.creationForm').reset();
    }
 });
-
-
 
 // functia pentru sters element din Dom
 function deleteElementFromDom(element){
@@ -171,26 +168,33 @@ function deleteElementFromDom(element){
 
 //functia de creat editForm pentru a fi adaugata apoi in Dom
 function createEditForm(gameToEdit){
+
+    const id = gameToEdit.getAttribute("id")
+    const title = gameToEdit.querySelector('h1').innerHTML;
+    const image = gameToEdit.querySelector('img').getAttribute("src");
+    const description = gameToEdit.querySelector('p').innerHTML;
+    
     
     const editForm = `<form class="updateForm" action="" method="POST">
                     <div class="element-wrapper">
                     <label for="updateTitle">Edit Title</label>
-                    <input type="text" id="updateTitle" value="${gameToEdit.title}" />
+                    <input type="text" id="updateTitle" value="${title}"/>
                     </div>
                     <div class="element-wrapper">
                     <label for="updateImageUrl">Edit Image URL</label>
-                    <input type="text" id="updateImageUrl" value="${gameToEdit.imageUrl}"/>
+                    <input type="text" id="updateImageUrl" value="${image}"/>
                     </div>
                     <div class="element-wrapper">
                     <label for="updateDescription">Edit Description</label>
-                    <textarea id="updateDescription" rows="5">${gameToEdit.description}</textarea>
+                    <textarea id="updateDescription" rows="5">${description}</textarea>
                     </div>
                     <div class="buttons-wrapper">
                     <button class="cancel-btn">Cancel</button>
-                    <button type="submit" class="update-btn" id="1${gameToEdit._id}">Save changes</button>
+                    <button type="submit" class="update-btn" id="update${id}">Save changes</button>
                     </div>
                     </form>`;
     return editForm;
 }
+
 
 

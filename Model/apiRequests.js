@@ -1,59 +1,59 @@
-let gamesUrl = "https://games-world.herokuapp.com";
+const gamesUrl = "https://games-app-siit.herokuapp.com";
 
-// pentru a cere lista de jocuri
-function getGamesList(afiseazaJocuri){
+// to request the games list
+function getGamesList(displayGames){
     fetch(gamesUrl + "/games", {
         method:"GET"
-    }).then(function(raspuns){
-        console.log("primul GET",raspuns)
-        return raspuns.json();
-    }).then(function(raspunsJson){
-        console.log("rez final primit la GET games list", raspunsJson);
-        afiseazaJocuri(raspunsJson);
+    }).then(function(response){
+        console.log("primul GET",response)
+        return response.json();
+    }).then(function(responseJson){
+        console.log("rez final primit la GET games list", responseJson);
+        displayGames(responseJson);
     });
 }
 
-//pentru a cere sa facem un nou joc nou
+//to request creating a new game
 
-function createGameRequest(jocNou, creeazaJocul) {
+function createGameRequest(newGame, createGame) {
     fetch(gamesUrl + "/games", {
         method: "POST",
         headers: {
             "Content-type":"application/x-www-form-urlencoded"
         },
-        body: jocNou
-    }).then(function(jocNou){
-        return jocNou.json();
-    }).then(function(jocJson){
-        creeazaJocul(jocJson);
-        console.log("jocul nou creat cu POST, primit json",jocJson);
+        body: newGame
+    }).then(function(newGame){
+        return newGame.json();
+    }).then(function(gameJson){
+        createGame(gameJson);
+        console.log("jocul nou creat cu POST, primit json",gameJson);
     });
 }
 
-//pentru a cere sa stergem un joc
-function createDeleteRequest(IdJocDeSters, stergeJocul) {
-    fetch(gamesUrl + "/games/" + IdJocDeSters, {
+//to request deleting a game
+function createDeleteRequest(idGameToDelete, deleteGame) {
+    fetch(gamesUrl + "/games/" + idGameToDelete, {
         method:"DELETE"
-    }).then(function(raspuns){
-        console.log("raspunsul de deleteRequest este", raspuns);
-        return raspuns.text();
-    }).then(function(raspunsJson){
-        console.log("rspunsul json de delete este", raspunsJson);
-        stergeJocul(IdJocDeSters);
+    }).then(function(response){
+        console.log("responseul de deleteRequest este", response);
+        return response.text();
+    }).then(function(responseJson){
+        console.log("rspunsul json de delete este", responseJson);
+        deleteGame(idGameToDelete);
     });
 }
 
-//pentru a cere sa modificam un joc
-function createUpdateRequest(IdJocDeEditat, jocDeEditat, editeazaJocul) {
-    fetch(gamesUrl + "/games/" + IdJocDeEditat.substr(1), {
+//requesting to update a game
+function createUpdateRequest(idGameToEit, gameToEit, editGame) {
+    fetch(gamesUrl + "/games/" + idGameToEit.substr(6), {
         method:"PUT",
         headers:{
             "Content-type":"application/x-www-form-urlencoded"
         },
-        body: jocDeEditat
-    }).then(function(raspuns){
-        return raspuns.json();
-    }).then(function(raspunsJson){
-        editeazaJocul(raspunsJson);
+        body: gameToEit
+    }).then(function(response){
+        return response.json();
+    }).then(function(responseJson){
+        editGame(responseJson);
     });
 }

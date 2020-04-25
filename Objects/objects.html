@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Objects</title>
+    <link rel="stylesheet" href="style.css"/>
+    <title>Document</title>
+</head>
+<body>
+    <form class="creationForm" action="" method="POST">
+        <div class = "element-wrapper">
+            <label for ="gameTitle">Title*</label>
+            <input type="text" value="" name="gameTitle" id="gameTitle" />
+        </div>
+
+        <div class = "element-wrapper">
+            <label for ="gameDescription">Description*</label>
+            <textarea id="gameDescription" name="gameDescription" rows="5"></textarea>
+        </div>
+
+        <div class = "element-wrapper">
+            <label for ="gameGenre">Genre</label>
+            <select id="gameGenre" name="gameGenre">
+                <option value="">-</option>
+                <option value="Action">Action</option>
+                <option value="Adventure">Adventure</option>
+            </select>
+        </div>
+
+        <div class = "element-wrapper">
+            <label for ="gamePublisher">Publisher</label>
+            <input type="text" id="gamePublisher" name="gamePublisher" />
+        </div>
+
+        <div class = "element-wrapper">
+            <label for ="gameImageUrl">Image URL*</label>
+            <input type="text" name="gameImageUrl" id="gameImageUrl" />
+        </div>
+
+        <div class = "element-wrapper">
+            <label for ="gameRelease">Release Date*</label>
+            <input type="text" id="gameRelease" name="gameRelease" />
+        </div>
+
+        <button type="submit" class="submit-btn">CREATE GAME</button>
+    </form>
+
+    <div class='container'></div>
+
+
+   <script src="Classes/FetchApi.js"></script> 
+   <script src="Classes/Games.js"></script>
+   <script src="helperFcts.js"></script>
+   <script src="app.js"></script>
+</body>
+</html>

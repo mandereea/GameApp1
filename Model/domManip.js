@@ -1,97 +1,86 @@
-// pentru a afisa lista de jocuri
+// for displaying all games in DOM
 getGamesList(function(raspunsJson){
     for(let i=0; i<raspunsJson.length; i++){
         createDomGameObject(raspunsJson[i]);
     }
 })
 
-//pentru a crea/afisa in dom jocul nou creat
+//fct for creating/rendering game in DOM
 function createDomGameObject(object){
     
-    let container = document.querySelector('.container');
-    let gameDiv = document.createElement('div');
+    const container = document.querySelector('.container');
+    const gameDiv = document.createElement('div');
 
     gameDiv.innerHTML += `<h1>${object.title}</h1>
-                        <img src="${object.imageUrl}"
+                        <img src="${object.imageUrl}"/>
                         <p>${object.description}</p>
-                        <button class="deleteBtn" id="${object._id}">Delete Game</button>
-                        <button class = "editBtn" id="0${object._id}" >Edit Game</button>`;
-    
+                        <button class="deleteBtn" id="delete${object._id}">Delete Game</button>
+                        <button class = "editBtn" id="edit${object._id}" >Edit Game</button>`;
+    gameDiv.setAttribute("id", object._id)
     container.appendChild(gameDiv);
 
-    //pentru a adauga functionalitate pe butonul de:
+    //adding fct on buttons:
     //1 DELETE
-    document.getElementById(`${object._id}`).addEventListener('click', function(event){
+    document.getElementById(`delete${object._id}`).addEventListener('click', function(eventClickDelete){
         //event.preventDefault();
         //console.log('delete button found');
-        createDeleteRequest(event.target.getAttribute("id"), function(apiR){
-            //console.log("raspunsul Api pt delete", apiR);
-            deleteElementFromDom(event.target.parentElement);
+        createDeleteRequest(eventClickDelete.target.parentElement.getAttribute("id"), function(apiR){
+            console.log("raspunsul Api pt delete", apiR);
+            deleteElementFromDom(eventClickDelete.target.parentElement);
         });
     });
 
     //2 EDIT
-    document.getElementById(`0${object._id}`).addEventListener('click', function(event){
-        //event.preventDefault();
-        const updateForm = document.createElement('div');
-        updateForm.innerHTML = createEditForm(object);
+    document.getElementById(`edit${object._id}`).addEventListener('click', function(eventClickOnEdit){
         
-        gameDiv.appendChild(updateForm);
-        //console.log(updateForm.parentElement)
+        const gameToEdit = eventClickOnEdit.target.parentElement;
+        //console.log(gameToEdit);
+        //console.log(object);
+        const updateForm = document.createElement('form');
+        updateForm.classList.add("updateForm");
+        updateForm.innerHTML = createEditForm(gameToEdit);
 
-        //found a way to select this specific gameDiv upon which the Edit-ing happens
-        updateForm.parentElement.classList.add('to-update');
-        //console.log(document.querySelector('.to-update'))
+        eventClickOnEdit.target.parentElement.appendChild(updateForm);
 
         //3 UPDATE in updateForm
-        document.getElementById(`1${object._id}`).addEventListener('click', function(event){
+        document.getElementById(`update${gameToEdit.id}`).addEventListener('click', function(eventClickOnSaveChanges){
             
-            event.preventDefault();
-            //console.log('gasit buton update din form, victory!', `1${object._id}`);
+            eventClickOnSaveChanges.preventDefault();
+            
+            const updatedGame = updateGame(updateForm);
 
-            const jocUpdated = updateGame(object);
+            createUpdateRequest(eventClickOnSaveChanges.target.getAttribute("id"), updatedGame, function(apiResponse) {
+                const gameDivContainer = eventClickOnSaveChanges.target.parentElement.parentElement.parentElement;
+                
+                gameDivContainer.querySelector('h1').innerHTML = apiResponse.title;
+                gameDivContainer.querySelector('img').setAttribute("src", apiResponse.imageUrl);
+                gameDivContainer.querySelector("p").innerHTML = apiResponse.description;
 
-            createUpdateRequest(event.target.getAttribute("id"), jocUpdated, function(apiResponse) {
-                
-                //i renounce using creatingDomGameObject :), and I render directly the selected gameDiv's content
-                //based on the apiResponse
-                //with 
-                
-                document.querySelector('.to-update').innerHTML =  
-                                    `<h1>${apiResponse.title}</h1>
-                                    <img src="${apiResponse.imageUrl}"
-                                    <p>${apiResponse.description}</p>
-                                    <button class="deleteBtn" id="${apiResponse._id}">Delete Game</button>
-                                    <button class = "editBtn" id="0${apiResponse._id}" >Edit Game</button>`;
-                
-                // removing the (selecting) class, in order to have it only on one game at a time
-                document.querySelector('.to-update').classList.remove('to-update');
+                const formElement = eventClickOnSaveChanges.target.parentElement.parentElement;
+                formElement.remove();
             });
         });
-    })
+    });
 
 }
 
-//functia ce-mi da jocUpdated de trimis la API
-function updateGame(obj){
+//fct to colect and encode data from updateForm
+function updateGame(){
+        //colecting data
+        const title = document.getElementById('updateTitle');
+        const description = document.getElementById('updateDescription');
+        const imageUrl = document.getElementById('updateImageUrl');
     
-    //1 colectez noile date din editForm in obj
-    obj.title = document.getElementById('updateTitle');
-    obj.description = document.getElementById('updateDescription');
-    obj.imageUrl = document.getElementById('updateImageUrl');
-
-    //2 le encodez in ordine pentru API request
-    const urlencoded = new URLSearchParams();
-    
-    urlencoded.append("title", obj.title.value);
-    urlencoded.append("description", obj.description.value);
-    urlencoded.append("imageUrl", obj.imageUrl.value);
-    
-    return urlencoded;
- }
-
-
-//functia pt validare input text
+        //encoding it to send to server
+        const urlencoded = new URLSearchParams();
+        
+        urlencoded.append("title", title.value);
+        urlencoded.append("description", description.value);
+        urlencoded.append("imageUrl", imageUrl.value);
+        
+        return urlencoded;
+}
+//fct to validate text input
 function validateFormTextInput(input, errorMsg){
     console.log(document.querySelector(`[rel="${input.id}]"`));
     if(input.value === "") {
@@ -107,14 +96,14 @@ function validateFormTextInput(input, errorMsg){
     }
 }
 
-//functia pentru a valida release date
+//fct to validate release date
 function validateFormDateInput(input, errMsg){
     if(isNaN(input.value) && input.value !== ""){
         displayErrorMsg(input, errMsg);
     }
 }
 
-//pentru a construi si afisa mesajul de eroare in dom
+//fct for building and displaying error message in DOM
 function displayErrorMsg(element, msg) {
     element.classList.add ('inputError');
     const errorMessage = document.createElement('span');
@@ -124,13 +113,13 @@ function displayErrorMsg(element, msg) {
     element.after(errorMessage);
 }
 
-// adaug functionalitate pe butonul de submit 
+//adding submit event on SUBMIT button
 document.querySelector('.submit-btn').addEventListener('click', function(event) {
    
     // 1 previn reload
     event.preventDefault();
 
-    // 2 colectez datele din form
+    // 2 collecting data from form
     let gTitle = document.getElementById('gameTitle');
     let gDescription = document.getElementById('gameDescription');
     let gGenre = document.getElementById('gameGenre');
@@ -138,7 +127,7 @@ document.querySelector('.submit-btn').addEventListener('click', function(event) 
     let gImageUrl = document.getElementById('gameImageUrl');
     let gReleaseDate = document.getElementById('gameRelease');
 
-    //3 le validez pt a afisa msg de eroare (sau nu, dupa caz)  folosind functiile create mai sus
+    //3 validate input/display error message if error
    validateFormTextInput(gTitle, "The title is required!");
    validateFormTextInput(gDescription, "The description is required!");
    validateFormTextInput(gGenre, "The genre is required!");
@@ -146,10 +135,10 @@ document.querySelector('.submit-btn').addEventListener('click', function(event) 
    validateFormTextInput(gImageUrl, "The imageUrl is required!");
    validateFormDateInput(gReleaseDate, "The release date must be valid");
 
-   //4 le validez pentru a crea noul joc
+   //4 validating input for sending new game request to server
    if( gTitle.value !== "" && gDescription.value !== "" && gGenre.value !== "" && gPublisher.value !== "" && gImageUrl.value !== "" && gReleaseDate.value !== "" && !isNaN(gReleaseDate.value)){
 
-        //a creez jocNou ce va fi trimis in request la api encodat(append in bucata de query a url)
+        //encode data to send to server
         const urlencoded = new URLSearchParams();
 
         urlencoded.append("title", gTitle.value);
@@ -159,42 +148,46 @@ document.querySelector('.submit-btn').addEventListener('click', function(event) 
         urlencoded.append("imageUrl", gImageUrl.value);
         urlencoded.append("description", gDescription.value);
         
-        //b fac requestul si folosesc raspunsul sa creez/afisez jocul in Dom 
+        //b request creating new game , create HTML object and add it to DOM
         createGameRequest(urlencoded, createDomGameObject);
         
-        //c fac reset la form, dupa success submit
+        //c reset form after succes submit
         document.querySelector('.creationForm').reset();
    }
 });
-
-// functia pentru sters element din Dom
+// fct for deleting el from DOM
 function deleteElementFromDom(element){
     element.remove();
 }
-
-//functia de creat editForm pentru a fi adaugata apoi in Dom
+//fct to create updateForm and populate it with gameToEdit data
 function createEditForm(gameToEdit){
+
+    const title = gameToEdit.querySelector('h1').innerHTML;
+    const image = gameToEdit.querySelector('img').getAttribute("src");
+    const description = gameToEdit.querySelector('p').innerHTML;
+    const id = gameToEdit.getAttribute("id")
     
     const editForm = `<form class="updateForm" action="" method="POST">
                     <div class="element-wrapper">
                     <label for="updateTitle">Edit Title</label>
-                    <input type="text" id="updateTitle" value="${gameToEdit.title}" />
+                    <input type="text" id="updateTitle" value="${title}"/>
                     </div>
                     <div class="element-wrapper">
                     <label for="updateImageUrl">Edit Image URL</label>
-                    <input type="text" id="updateImageUrl" value="${gameToEdit.imageUrl}"/>
+                    <input type="text" id="updateImageUrl" value="${image}"/>
                     </div>
                     <div class="element-wrapper">
                     <label for="updateDescription">Edit Description</label>
-                    <textarea id="updateDescription" rows="5">${gameToEdit.description}</textarea>
+                    <textarea id="updateDescription" rows="5">${description}</textarea>
                     </div>
                     <div class="buttons-wrapper">
                     <button class="cancel-btn">Cancel</button>
-                    <button type="submit" class="update-btn" id="1${gameToEdit._id}">Save changes</button>
+                    <button type="submit" class="update-btn" id="update${id}">Save changes</button>
                     </div>
                     </form>`;
     return editForm;
 }
+
 
 
 
