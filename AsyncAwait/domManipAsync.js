@@ -8,7 +8,7 @@ async function afiseazaJocuri(){
 }
 afiseazaJocuri();
 
-function createDomGameObject(object){
+async function createDomGameObject(object){
     
     let container = document.querySelector('.container');
     let gameDiv = document.createElement('div');
